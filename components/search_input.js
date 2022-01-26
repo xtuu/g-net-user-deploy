@@ -1,4 +1,4 @@
-import { Container, Box, Input, InputGroup, InputRightAddon, Stack } from "@chakra-ui/react";
+import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link } from "@chakra-ui/react";
 import axios, { Axios } from "axios";
 import { useEffect, useState } from "react";
 
@@ -100,16 +100,17 @@ const SearchContainer = (props) => {
   
     <Container >
       <InputGroup>
-      <Input placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
+      <Input id="input" placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
       <InputRightAddon children={`Total ${ total.count } `}/>
       </InputGroup>
-    
       { user.map((item, key ) => (
 
         <ListItem key={key} name={item.name} parroquia={item.parroquia} sector={item.sector} telf={item.phone}/>
 
       )) }
-      
+      <Link href="/">
+        <Button margin={4} colorScheme='red'> Buscar </Button>
+      </Link>
     </Container>
   )
 }

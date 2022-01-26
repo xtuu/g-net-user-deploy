@@ -1,4 +1,4 @@
-import { Box, Container, Image } from "@chakra-ui/react";
+import { Box, Container, Image,Button, Link } from "@chakra-ui/react";
 import SearchContainer from "../components/search_input";
 
 
@@ -12,8 +12,6 @@ const IndexPage = ( ) => {
         </Box>
       </Box>
     </Container>
-
-      
 
   )
 

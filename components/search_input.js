@@ -101,7 +101,7 @@ const SearchContainer = (props) => {
     <Container >
       <InputGroup>
       <Input id="input" placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
-      <InputRightAddon children={`Total ${ total.count } `}/>
+      <InputRightAddon children={`Total ${ total.count == null ? '0': total.count } `}/>
       </InputGroup>
       { user.map((item, key ) => (
 

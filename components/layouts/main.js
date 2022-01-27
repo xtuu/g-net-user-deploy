@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Footer from '../footer';
 
 
-const Main = ({children, router}) => {
+const Main = ({children}) => {
 
   return ( 
     <Box as='main' >

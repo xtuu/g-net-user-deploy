@@ -1,10 +1,10 @@
-import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link } from "@chakra-ui/react";
+import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link, Flex, Center } from "@chakra-ui/react";
 import axios, { Axios } from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
 
-const ListItem = ({  name,telf, parroquia, sector  }) => {
+const ListItem = ({ name,telf, parroquia, sector  }) => {
   return (
     <Box maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden' mt={4}> 
       <Stack
@@ -34,8 +34,6 @@ const ListItem = ({  name,telf, parroquia, sector  }) => {
         isTruncated>
         {telf}
       </Box>
-
-
       </Stack>
       <Box
         ml={4}
@@ -51,12 +49,14 @@ const ListItem = ({  name,telf, parroquia, sector  }) => {
 }
 
 
+
 const SearchContainer = (props) => {
 
 
   const [total, setTotal] = useState([]);
   const [user, setUser] = useState([]);
   const [query, setQuery] = useState('');
+  const searchInput = useRef(null);
 
   const getTotalUserData = async () => {
   
@@ -89,6 +89,7 @@ const SearchContainer = (props) => {
   
   useEffect(() => {
     getTotalUserData()
+    searchInput.current.focus();
   },[]);
 
   useEffect(() => {
@@ -96,11 +97,12 @@ const SearchContainer = (props) => {
   },[query]);
 
   
-  return (
   
+
+  return (
     <Container >
       <InputGroup>
-      <Input id="input" placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
+      <Input ref={searchInput} placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
       <InputRightAddon children={`Total ${ total.count == null ? '0': total.count } `}/>
       </InputGroup>
       { user.map((item, key ) => (
@@ -108,9 +110,13 @@ const SearchContainer = (props) => {
         <ListItem key={key} name={item.name} parroquia={item.parroquia} sector={item.sector} telf={item.phone}/>
 
       )) }
-      <Link href="/">
-        <Button margin={4} colorScheme='red'> Buscar </Button>
-      </Link>
+      <Container maxW='container.md'>
+        <Center>
+          <Link href="/">
+            <Button mt={4} colorScheme='cyan' size='md' width='200px'> Buscar</Button>
+          </Link>
+        </Center>
+      </Container>
     </Container>
   )
 }

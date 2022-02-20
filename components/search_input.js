@@ -1,12 +1,13 @@
-import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link, Flex, Center } from "@chakra-ui/react";
+import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link, Flex, Center, IconButton } from "@chakra-ui/react";
 import axios, { Axios } from "axios";
 import { useEffect, useState, useRef } from "react";
+import { EditIcon } from '@chakra-ui/icons';
 
 
 
-const ListItem = ({ name,telf, parroquia, sector  }) => {
+const ListItem = ({ name,telf, parroquia, sector , email }) => {
   return (
-    <Box maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden' mt={4}> 
+    <Box borderWidth='1px' borderRadius='lg' overflow='hidden' mt={4}> 
       <Stack
         direction={{base: 'row',md:"row"}}
         width={{base:"full",md:'auto'}}
@@ -34,9 +35,24 @@ const ListItem = ({ name,telf, parroquia, sector  }) => {
         isTruncated>
         {telf}
       </Box>
+      <Box p={1}>
+        <Link href="/edit">
+          <IconButton backgroundColor='black'  icon={<EditIcon/>}></IconButton>
+        </Link>
+      </Box>
       </Stack>
       <Box
         ml={4}
+        pb={2}
+        color='gray.500'
+        fontWeight='semibold'
+        // letterSpacing='normal'
+        fontSize='s'>
+        {email}
+      </Box>
+      <Box
+        ml={4}
+        pb={2}
         color='gray.500'
         fontWeight='semibold'
         // letterSpacing='normal'
@@ -103,17 +119,19 @@ const SearchContainer = (props) => {
     <Container >
       <InputGroup>
       <Input ref={searchInput} placeholder="Buscar Cliente" onChange={ (query) => {setQuery(query.target.value)}}/>
-      <InputRightAddon children={`Total ${ total.count == null ? '0': total.count } `}/>
+      <InputRightAddon children={`Total ${ total.count == null ? '0': total.count } `} backgroundColor='black'/>
       </InputGroup>
       { user.map((item, key ) => (
 
-        <ListItem key={key} name={item.name} parroquia={item.parroquia} sector={item.sector} telf={item.phone}/>
+
+        <ListItem key={key} name={item.name} parroquia={item.parroquia} sector={item.sector} telf={item.phone} email={item.email}/>
+
 
       )) }
       <Container maxW='container.md'>
         <Center>
           <Link href="/">
-            <Button mt={4} colorScheme='cyan' size='md' width='200px'> Buscar</Button>
+            <Button mt={4} backgroundColor='blue.400' size='md' width='200px'> Buscar</Button>
           </Link>
         </Center>
       </Container>

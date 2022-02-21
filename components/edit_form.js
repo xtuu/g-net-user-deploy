@@ -19,6 +19,7 @@ import { ViewIcon, ViewOffIcon, ArrowBackIcon } from '@chakra-ui/icons';
 export default function EditUser({props}) {
 
 
+
   const [parroquias, setParroquias] = useState([]);
   const [mostrar, setMostrar] = useState(false);
   const [nombre, setNombre] = useState();
@@ -43,8 +44,14 @@ export default function EditUser({props}) {
                   },
               });
 
+              
+
               let respuesta = await responseEndpoint.json();
               setParroquias(respuesta);
+              let sectores = respuesta.find(n => n.parroquia_id == props.parroquia_id);
+              console.log(respuesta, 'respuesta')
+              setSectores(sectores.data);
+              
 
           } catch (e) {
               // error reading value
@@ -53,6 +60,8 @@ export default function EditUser({props}) {
 
       fetchParroquia();
   }, []);
+
+
 
   const handleChange = (event) => {
       setParroquia(event.target.value);
@@ -79,12 +88,17 @@ export default function EditUser({props}) {
       setEmail(event.target.value);
   };
 
+
+  // TODO: acomodar el put
   const handleSubmit = (e) => {
+
+    console.log(props.id)
+
       e.preventDefault();
       setCargando(!cargando);
 
-      fetch(`https://gnetwork.gonavi.dev/user/`, {
-          method: 'POST',
+      fetch(`https://gnetwork.gonavi.dev/user/${props.id}`, {
+          method: 'PUT',
           body: JSON.stringify({
               name: nombre,
               email: email,
@@ -118,6 +132,7 @@ export default function EditUser({props}) {
               setCargando(false);
           });
 
+
   }
 
 
@@ -140,31 +155,36 @@ export default function EditUser({props}) {
           <Heading fontSize={'4xl'} textAlign={'center'} pl={4}>
             Editar Usuario
           </Heading>
-
-        </Stack>
-        <Box
-          rounded={'lg'}
-          bg={useColorModeValue('black', 'black')}
-          boxShadow={'lg'}
-          p={8}>
+              </Stack>
+              <Box
+                rounded={'lg'}
+                bg={useColorModeValue('black', 'black')}
+                boxShadow={'lg'}
+                p={8}>
+          <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
             <HStack>
               <Box>
                 <FormControl id="firstName" isRequired>
                   <FormLabel>Nombre y apellido</FormLabel>
-                  <Input type="text" value={props.name}/>
+                  <Input type="text" defaultValue={props.name}  onChange={handleChange3}
+
+                                    value={nombre}/>
                 </FormControl>
               </Box>
               <Box>
                 <FormControl id="lastName">
                   <FormLabel>Nro de teléfono</FormLabel>
-                  <Input type="text" value={props.telf}/>
+                  <Input type="text" defaultValue={props.telf}  onChange={handleChange5}
+                                    value={email}/>
                 </FormControl>
               </Box>
             </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Correo</FormLabel>
-              <Input type="email" value={props.email} />
+              <Input type="email" defaultValue={props.email}
+                                    value={telefono}
+                                    onChange={handleChange4}/>
             </FormControl> 
               <FormLabel>Parroquia</FormLabel>
               {parroquias.length > 0 && (
@@ -191,6 +211,7 @@ export default function EditUser({props}) {
               
             <Stack spacing={10} pt={2}>
               <Button
+                type='onSubmit'
                 loadingText="Submitting"
                 size="lg"
                 bg={'blue.400'}
@@ -201,8 +222,9 @@ export default function EditUser({props}) {
                 Editar
               </Button>
             </Stack>
-           
           </Stack>
+          </form>
+
         </Box>
       </Stack>
     </Flex>

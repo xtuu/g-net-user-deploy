@@ -2,10 +2,16 @@ import { Container, Box, Input, InputGroup, InputRightAddon, Stack, Button, Link
 import axios, { Axios } from "axios";
 import { useEffect, useState, useRef } from "react";
 import { EditIcon } from '@chakra-ui/icons';
+import { useRouter } from "next/router"; 
 
 
 
-const ListItem = ({ name,telf, parroquia, sector , email }) => {
+
+const ListItem = ({  id,name,telf, parroquia, sector , email, parroquia_id, sector_id }) => {
+
+  const router = useRouter();
+
+
   return (
     <Box borderWidth='1px' borderRadius='lg' overflow='hidden' mt={4}> 
       <Stack
@@ -36,9 +42,11 @@ const ListItem = ({ name,telf, parroquia, sector , email }) => {
         {telf}
       </Box>
       <Box p={1}>
-        <Link href="/edit">
-          <IconButton backgroundColor='black'  icon={<EditIcon/>}></IconButton>
-        </Link>
+
+          <IconButton 
+          backgroundColor='black' 
+          onClick= {()=>router.push({pathname: '/edit', query:{ id,name,telf, parroquia, sector , email, parroquia_id, sector_id } })} icon={<EditIcon/>}></IconButton>
+
       </Box>
       </Stack>
       <Box
@@ -82,6 +90,7 @@ const SearchContainer = (props) => {
   
       setUser(value.data.results)
       setTotal(value.data)
+      // console.log(value.data);
     })
   }
 
@@ -89,7 +98,7 @@ const SearchContainer = (props) => {
     
     
     setTimeout(async ()  => {
-      console.log('hola')
+
       let _url = `https://gnetwork.gonavi.dev/user?search=${query}`;
       
         await axios.get(_url).then( (value) => { 
@@ -115,6 +124,7 @@ const SearchContainer = (props) => {
   
   
 
+
   return (
     <Container >
       <InputGroup>
@@ -124,7 +134,17 @@ const SearchContainer = (props) => {
       { user.map((item, key ) => (
 
 
-        <ListItem key={key} name={item.name} parroquia={item.parroquia} sector={item.sector} telf={item.phone} email={item.email}/>
+        <ListItem 
+        id={item.id}
+        key={key} 
+        name={item.name} 
+        parroquia={item.nombre_parroquia}
+        sector={item.nombre_sector}
+        telf={item.phone} 
+        email={item.email}
+        parroquia_id={item.id_parroquia}
+        sector_id={item.id_sector}
+        />
 
 
       )) }

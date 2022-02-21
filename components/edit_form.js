@@ -4,23 +4,124 @@ import {
   FormControl,
   FormLabel,
   Input,
-  InputGroup,
   HStack,
-  InputRightElement,
   Stack,
   Button,
   Heading,
-  Text,
   useColorModeValue,
   Link,
   IconButton,
-  Spacer,
+  Select
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ViewIcon, ViewOffIcon, ArrowBackIcon } from '@chakra-ui/icons';
 
-export default function EditUser() {
-  const [showPassword, setShowPassword] = useState(false);
+export default function EditUser({props}) {
+
+
+  const [parroquias, setParroquias] = useState([]);
+  const [mostrar, setMostrar] = useState(false);
+  const [nombre, setNombre] = useState();
+  const [email, setEmail] = useState();
+  const [telefono, setTelefono] = useState();
+  const [parroquia, setParroquia] = useState();
+  const [sector, setSector] = useState();
+  const [sectores, setSectores] = useState([]);
+  const [cargando, setCargando] = useState(false);
+
+  useEffect(() => {
+
+      async function fetchParroquia() {
+          try {
+              let url =
+                  'https://gnetwork.gonavi.dev/sector/?format=json';
+              let responseEndpoint = await fetch(url, {
+                  method: 'GET',
+                  headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                  },
+              });
+
+              let respuesta = await responseEndpoint.json();
+              setParroquias(respuesta);
+
+          } catch (e) {
+              // error reading value
+          }
+      }
+
+      fetchParroquia();
+  }, []);
+
+  const handleChange = (event) => {
+      setParroquia(event.target.value);
+      // eslint-disable-next-line eqeqeq
+      let sectores = parroquias.find(n => n.parroquia_id == event.target.value);
+      
+         setSectores(sectores.data);
+         setMostrar(!mostrar);
+  };
+
+  const handleChange2 = (event) => {
+      setSector(event.target.value);
+  };
+
+  const handleChange3 = (event) => {
+      setNombre(event.target.value);
+  };
+
+  const handleChange4 = (event) => {
+      setTelefono(event.target.value);
+  };
+
+  const handleChange5 = (event) => {
+      setEmail(event.target.value);
+  };
+
+  const handleSubmit = (e) => {
+      e.preventDefault();
+      setCargando(!cargando);
+
+      fetch(`https://gnetwork.gonavi.dev/user/`, {
+          method: 'POST',
+          body: JSON.stringify({
+              name: nombre,
+              email: email,
+              phone: telefono,
+              parroquia: parseInt(parroquia),
+              sector: parseInt(sector),
+          }),
+          supportHeaderParams: true,
+          headers: { "Content-Type": "application/json; charset=UTF-8" },
+      })
+          .then(res => res.json())
+          .then(res => {
+
+              if (res.message === 'Ok') {
+                  alert('Gracias por regístarse, pronto recibirá un mensaje de texto.');
+              } else {
+                  if (res.phone) {
+                      alert('El número de telefono ya esta registrado.')
+                  } else {
+                      if (res.name) {
+                          alert('El nombre no puede estar en blanco.')
+                      } else {
+                          alert('Ha ocurrido un error, intente más tarde.')
+                      }
+                  }
+
+              }
+              setCargando(false);
+          }).catch(function (error) {                        // catch
+              console.log('Request failed', error);
+              setCargando(false);
+          });
+
+  }
+
+
+
 
   return (
     <Flex
@@ -43,7 +144,7 @@ export default function EditUser() {
         </Stack>
         <Box
           rounded={'lg'}
-          bg={useColorModeValue('black', 'gray.700')}
+          bg={useColorModeValue('black', 'black')}
           boxShadow={'lg'}
           p={8}>
           <Stack spacing={4}>
@@ -51,43 +152,43 @@ export default function EditUser() {
               <Box>
                 <FormControl id="firstName" isRequired>
                   <FormLabel>Nombre y apellido</FormLabel>
-                  <Input type="text" />
+                  <Input type="text" value={props.name}/>
                 </FormControl>
               </Box>
               <Box>
                 <FormControl id="lastName">
                   <FormLabel>Nro de teléfono</FormLabel>
-                  <Input type="text" />
+                  <Input type="text" value={props.telf}/>
                 </FormControl>
               </Box>
             </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Correo</FormLabel>
-              <Input type="email" />
+              <Input type="email" value={props.email} />
             </FormControl> 
-            <FormControl id="email" isRequired>
               <FormLabel>Parroquia</FormLabel>
-              <Input type="email" />
-            </FormControl>
-            <FormControl id="email" isRequired>
-              <FormLabel>Sector</FormLabel>
-              <Input type="email" />
-            </FormControl>
-            {/* <FormControl id="password" isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input type={showPassword ? 'text' : 'password'} />
-                <InputRightElement h={'full'}>
-                  <Button
-                    variant={'ghost'}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }>
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl> */}
+              {parroquias.length > 0 && (
+                <Select placeholder='Seleciona' defaultValue={props.parroquia_id} onChange={handleChange} >
+                  {
+                    parroquias.map(( parroquia )=> 
+                      <option key={parroquia.parroquia_id} value={parroquia.parroquia_id}>{parroquia.parroquia}</option>
+                   )
+                  }
+                </Select>
+              )}
+                   {sectores.length > 0 ? (
+                  <FormControl>
+                    <FormLabel>Sector</FormLabel>
+                      <Select placeholder='Seleciona' defaultValue={props.sector_id} onChange={handleChange2}>
+                        {
+                           sectores.map((sitio) =>
+                           <option key={sitio.id} value={sitio.id} >{sitio.name}</option>
+                          )
+                        }
+                    </Select>
+                  </FormControl>
+                  ):<></>}
+              
             <Stack spacing={10} pt={2}>
               <Button
                 loadingText="Submitting"
@@ -100,11 +201,7 @@ export default function EditUser() {
                 Editar
               </Button>
             </Stack>
-            {/* <Stack pt={6}>
-              <Text align={'center'}>
-                Already a user? <Link color={'blue.400'}>Login</Link>
-              </Text>
-            </Stack> */}
+           
           </Stack>
         </Box>
       </Stack>

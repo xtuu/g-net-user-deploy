@@ -15,21 +15,17 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { ViewIcon, ViewOffIcon, ArrowBackIcon } from '@chakra-ui/icons';
+import { useForm } from 'react-hook-form';
+
 
 export default function EditUser({props}) {
-
-
-
   const [parroquias, setParroquias] = useState([]);
   const [mostrar, setMostrar] = useState(false);
-  const [nombre, setNombre] = useState();
-  const [email, setEmail] = useState();
-  const [telefono, setTelefono] = useState();
-  const [parroquia, setParroquia] = useState();
-  const [sector, setSector] = useState();
   const [sectores, setSectores] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [parroquia, setParroquia ] = useState([])
 
+   
   useEffect(() => {
 
       async function fetchParroquia() {
@@ -61,6 +57,7 @@ export default function EditUser({props}) {
       fetchParroquia();
   }, []);
 
+  const { register, handleSubmit, watch, formState } = useForm();
 
 
   const handleChange = (event) => {
@@ -72,69 +69,12 @@ export default function EditUser({props}) {
          setMostrar(!mostrar);
   };
 
-  const handleChange2 = (event) => {
-      setSector(event.target.value);
-  };
 
-  const handleChange3 = (event) => {
-      setNombre(event.target.value);
-  };
-
-  const handleChange4 = (event) => {
-      setTelefono(event.target.value);
-  };
-
-  const handleChange5 = (event) => {
-      setEmail(event.target.value);
-  };
-
-
-  // TODO: acomodar el put
-  const handleSubmit = (e) => {
-
-    console.log(props.id)
-
-      e.preventDefault();
-      setCargando(!cargando);
-
-      fetch(`https://gnetwork.gonavi.dev/user/${props.id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-              name: nombre,
-              email: email,
-              phone: telefono,
-              parroquia: parseInt(parroquia),
-              sector: parseInt(sector),
-          }),
-          supportHeaderParams: true,
-          headers: { "Content-Type": "application/json; charset=UTF-8" },
-      })
-          .then(res => res.json())
-          .then(res => {
-
-              if (res.message === 'Ok') {
-                  alert('Gracias por regístarse, pronto recibirá un mensaje de texto.');
-              } else {
-                  if (res.phone) {
-                      alert('El número de telefono ya esta registrado.')
-                  } else {
-                      if (res.name) {
-                          alert('El nombre no puede estar en blanco.')
-                      } else {
-                          alert('Ha ocurrido un error, intente más tarde.')
-                      }
-                  }
-
-              }
-              setCargando(false);
-          }).catch(function (error) {                        // catch
-              console.log('Request failed', error);
-              setCargando(false);
-          });
+  const onSubmit = (data) => {
+    console.log(data);
 
 
   }
-
 
 
 
@@ -161,37 +101,32 @@ export default function EditUser({props}) {
                 bg={useColorModeValue('black', 'black')}
                 boxShadow={'lg'}
                 p={8}>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={4}>
             <HStack>
               <Box>
                 <FormControl id="firstName" isRequired>
                   <FormLabel>Nombre y apellido</FormLabel>
-                  <Input type="text" defaultValue={props.name}  onChange={handleChange3}
-
-                                    value={nombre}/>
+                  <Input type="text" defaultValue={props.name} {...register('name' ,{required: true })} />
                 </FormControl>
               </Box>
               <Box>
-                <FormControl id="lastName">
+                <FormControl id="telf">
                   <FormLabel>Nro de teléfono</FormLabel>
-                  <Input type="text" defaultValue={props.telf}  onChange={handleChange5}
-                                    value={email}/>
+                  <Input type="text" defaultValue={props.telf} {...register('telf' ,{required: true })}/>
                 </FormControl>
               </Box>
             </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Correo</FormLabel>
-              <Input type="email" defaultValue={props.email}
-                                    value={telefono}
-                                    onChange={handleChange4}/>
+              <Input type="email" defaultValue={props.email} {...register('email' ,{required: true })}/>
             </FormControl> 
               <FormLabel>Parroquia</FormLabel>
               {parroquias.length > 0 && (
-                <Select placeholder='Seleciona' defaultValue={props.parroquia_id} onChange={handleChange} >
+                <Select placeholder='Seleciona' defaultValue={props.parroquia_id} onChange={handleChange}>
                   {
                     parroquias.map(( parroquia )=> 
-                      <option key={parroquia.parroquia_id} value={parroquia.parroquia_id}>{parroquia.parroquia}</option>
+                      <option key={parroquia.parroquia_id} {...register('parroquia' ,{required: true })} value={parroquia.parroquia_id}>{parroquia.parroquia}</option>
                    )
                   }
                 </Select>
@@ -199,10 +134,10 @@ export default function EditUser({props}) {
                    {sectores.length > 0 ? (
                   <FormControl>
                     <FormLabel>Sector</FormLabel>
-                      <Select placeholder='Seleciona' defaultValue={props.sector_id} onChange={handleChange2}>
+                      <Select placeholder='Seleciona' defaultValue={props.sector_id}>
                         {
                            sectores.map((sitio) =>
-                           <option key={sitio.id} value={sitio.id} >{sitio.name}</option>
+                           <option key={sitio.id} value={sitio.id} {...register('sector' ,{required: true })}>{sitio.name}</option>
                           )
                         }
                     </Select>

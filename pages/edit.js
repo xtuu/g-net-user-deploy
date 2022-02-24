@@ -6,13 +6,13 @@ import { useRouter } from "next/router";
 
 
 
-const EditPage = ( ) => {
-  
-  const router = useRouter();
+const EditPage = () => {
+
+  const { query } = useRouter();
 
   return (
     <Box>
-      <EditUser props={router.query}/>
+      <EditUser query={query} />
     </Box>
   )
 }
